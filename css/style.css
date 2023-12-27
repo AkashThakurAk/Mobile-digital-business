@@ -1,14 +1,16 @@
 body {
     margin: 0px;
 }
-
+.c-mobile_body_home{
+    background-image: linear-gradient(233deg, #EADEDB 0%, #c93c82 50%, #d96531 75%);
+    position: relative;
+}
 .c-mobile_body {
     max-width: 490px;
     margin: 0px auto;
     height: 100%;
     position: relative;
     padding: 5%;
-    background-image: linear-gradient(233deg, #EADEDB 0%, #c93c82 50%, #d96531 75%);
 }
 
 .c-profile-img {
@@ -173,7 +175,7 @@ body {
 /* ////////////////////////Login Page css */
 .c-login-dive {
     height: 100vh;
-    padding: 10% 5%;
+    padding: 5% 5%;
     overflow: hidden;
 }
 
