@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toggle Example</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <style>
+        #toggleElement {
+            display: none;
+            /* Initially hidden */
+        }
+
+        #toggledManu {
+            display: none;
+        }
+        .myDIV{
+            display: none;
+        }
+        .mystyle{
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="toggleVisibility()"><i class="fa-solid fa-bars"></i></button>
+    <div id="toggleElement">This element can be toggled</div>
+    <a onclick="toggleManu()"><i class="fa-solid fa-bars"></i></a>
+    <div id="toggledManu">
+        <ul>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+            <li>7</li>
+            <li>8</li>
+        </ul>
+    </div>
+
+    <button onclick="myFunction()">Try it</button>
+
+    <div class="myDIV">
+        This is a DIV element.
+    </div>
+
+    <script>
+        function myFunction() {
+            var element = document.getElementsByClassName("myDIV")[0];
+            element.classList.toggle("mystyle");
+        }
+    </script>
+    <script>
+        function toggleVisibility() {
+            var element = document.getElementById("toggleElement");
+
+            // Toggle the visibility
+            if (element.style.display === "none") {
+                element.style.display = "block";
+            } else {
+                element.style.display = "none";
+            }            
+        }
+    </script>
+    <script>
+        function toggleManu() {
+            var element = document.getElementById("toggledManu");
+            if (element.style.display === "none") {
+                element.style.display = "block";
+            } else {
+                element.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>
