@@ -1,41 +1,44 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-function Login() {
+function SignUp() {
 
-
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [cpassword, setCPassword] = useState("")
     const [errmsg, setErrmsg] = useState('');
+    // const [cpassword, setCPassword] = useState("")
+
+
 
     const redirect = useNavigate();
 
-    const handlelogin = async (e) => {
+    const handlesignup = async (e) => {
         e.preventDefault();
-        if (email === "" || password === "") {
+        if (name === "" || email === "" || password === "" || cpassword === "") {
             setErrmsg("Enter Full Details")
             return;
-        } else {
+        } else if (password !== cpassword) {
+            setErrmsg("Password Does Not Match");
+            return; // Exit the function early if passwords don't match
+        }
+        else {
             try {
-                const response = await axios.post("http://localhost:2000/login", {
+                const response = await axios.post("http://localhost:2000/signup", {
                     email: email,
                     password: password,
+                    name: name,
                 })
+
+                // Check the status within the response
                 if (response.status === 200) {
-                    setErrmsg(response.data.message)
-                    window.localStorage.setItem("loginuser", email);
-
-                    if (response.data.message === "client") {
-                        redirect("/user");
-                    }
-                    else if (response.data.message === "admin") {
-                        redirect("/admin")
-                    }
-
-                    // redirect("/profile");
+                    setErrmsg("SIGNUP SUCCESSFUL");
+                    window.localStorage.setItem("loginemail", email);
+                    redirect("/profile");
                 }
-
             } catch (error) {
                 if (error.response && error.response.status === 400) {
                     setErrmsg(error.response.data.message);
@@ -45,10 +48,10 @@ function Login() {
                 }
             }
         }
-    }
+    };
 
     return (
-        <div className=" c-login-dive c-new-sign-up">
+        <div className=" c-login-dive c-new-sign-up" >
             <div className='c-mobile_body'>
                 <div>
                     <div className="star-field">
@@ -58,17 +61,23 @@ function Login() {
                     </div>
                 </div>
                 <div className="c-login_des">
-                    <form>
+                    <form >
                         <div className="c-mobile_text">
-                            <h2>Welcome Back</h2>
-                            <p>Please Enter Your Email and Password</p>
+                            <h2>Welcome</h2>
+                            <p>Please Enter Your Details</p>
                         </div>
                         <div className="c-input-box">
+                            <label htmlFor="name"><b>Name</b></label>
+                            <input type="text" placeholder="Enter Name" name="name" onChange={(e) => (setName(e.target.value))} required />
+
                             <label htmlFor="email"><b>Email</b></label>
                             <input type="email" placeholder="Enter Email" name="email" onChange={(e) => (setEmail(e.target.value))} required />
 
                             <label htmlFor="psw"><b>Password</b></label>
-                            <input type="password" placeholder="Enter Password" name="psw" onChange={(e) => (setPassword(e.target.value))} required />
+                            <input type="password" placeholder="Enter Password" name="password" onChange={(e) => (setPassword(e.target.value))} required />
+
+                            <label htmlFor="confirmPsw"><b>Confirm Password</b></label>
+                            <input type="password" placeholder="Confirm Password" name="confirmpassword" onChange={(e) => (setCPassword(e.target.value))} required />
                             {errmsg && (
                                 <p style={{ color: "red" }}>
                                     {setErrmsg}
@@ -77,23 +86,21 @@ function Login() {
                             {errmsg && (
                                 <p style={{ color: "red" }}>{errmsg}</p>
                             )}
-                            <button onClick={handlelogin}>Login</button>
+
+                            <button onClick={handlesignup}>Sign Up</button>
                         </div>
                         <div className="c-forget-pas">
-                            <span className="psw"><a href="#">Forgot password?</a></span>
-                        </div>
-                        <div className="c-forget-pas">
-                            <span className='' >Don't have an account?
-                                <Link to="/signup" className=''>
-                                    Sign Up
+                            <span className='' >Have an account?
+                                <Link to="/login" className=''>
+                                    Login
                                 </Link>
                             </span>
                         </div>
                     </form>
                 </div>
-            </div>
+            </div >
         </div>
     );
 }
 
-export default Login;
+export default SignUp;

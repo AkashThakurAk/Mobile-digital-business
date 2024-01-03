@@ -15,7 +15,7 @@ function Card() {
     const lastSegment = pathSegments[pathSegments.length - 1];
 
     const trimmedSegment = lastSegment.trim();
-    console.log(trimmedSegment);
+    // console.log(trimmedSegment);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,8 +27,8 @@ function Card() {
                 })
                 if (response.status === 200) {
                     setResponsedata(response.data);
-                    console.log(response.data);
-                    console.log(`Pic is ${responsedata.Profile_Pic}`);
+                    // console.log(response.data);
+                    // console.log(`Pic is ${responsedata.Profile_Pic}`);
                 }
 
             } catch (error) {

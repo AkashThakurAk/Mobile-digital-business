@@ -513,7 +513,76 @@ button:hover {
 
 #profile-upload:hover .fa:after { height:100%; }
 /* Change styles for span and cancel button on extra small screens */
+/* ////////////////////////////////footer/////////// */
+.c-footer{
+    background-color: #292828;
+    padding: 40px 0px;
+}
+.c-footer-one .c-footer-one-logo a img{
+    width: 50%;
+    margin-bottom: 30px;
+}
+.c-footer-one .c-footer-one-logo p{
+    color: #fff;
+}
+.c-footer-one-button{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.c-footer-one-button a{
+    width: 45%;
+}
+.c-footer-one-button a img{
+    width: 100%;
+}
+.c-footer-two h3{
+    color: #fff;
+}
+.c-footer-two ul {
+    color: #fff;
+    padding: 0;
+    list-style: none;
+}
+.c-footer-two ul li{
+    margin: 10px 0px;
+}
+.c-footer-two ul li a{
+    color: #fff;
+}
+.c-footer-three h3{
+    color: #fff;
+}
+.c-footer-three ul {
+    color: #fff;
+    padding: 0;
+    list-style: none;
+}
+.c-footer-three ul li{
+    margin: 10px 0px;
+}
+.c-footer-three ul li a{
+    color: #fff;
+}
 
+/* /////////////////////////login new css 3 jan */
+.c-login-dive-row{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+.c-login-dive-row-col-5{
+    width: 25%;
+    display: flex;
+    align-items: center;
+}
+.c-login-dive-row-col-5 img{
+   width: 100%;
+}
+.c-login-dive-row-col-7{
+    width: 48%;
+}
 @media (max-width: 490px) {
     .c-bio_user h2 {
         font-size: 6vw;
@@ -554,5 +623,12 @@ button:hover {
 
     .c-mobile_text p {
         font-size: 4vw;
+    }
+    /* ///////////////////////////login new css 3 jan */
+    .c-login-dive-row-col-5{
+        display: none;
+    }
+    .c-login-dive-row-col-7{
+        width: 100%;
     }
 }

@@ -204,6 +204,11 @@ body {
   font-size: 24px;
 }
 
+.c-bg_pic {
+  height: 100vh !important;
+
+}
+
 /* ////////////////////////Login Page css */
 .c-login-dive {
   height: 100vh;
@@ -308,6 +313,29 @@ button:hover {
 .glowing:nth-child(even) {
   transform-origin: left;
 }
+
+/* ///////////////////////////////////////////card /////////////////// */
+.c-card {
+  max-width: 531px;
+  width: 100%;
+  background-image: linear-gradient(233deg, #EADEDB 0%, #c93c82 50%, #d96531 75%);
+  padding: 3%;
+  text-align: center;
+  /* border-radius: 20px; */
+  margin: 3% auto;
+}
+
+.c-card_qr {
+  margin-bottom: 2%;
+}
+
+.c-card_des p {
+  color: #fff;
+  margin: 1% 2%;
+  font-size: 18px;
+}
+
+
 
 @keyframes colorChange {
   0% {
@@ -497,7 +525,7 @@ button:hover {
 
 /* //////////////////////////upload imag */
 #profile-upload {
-  background-image: url(../src/Assets/images/user.jpg);
+  /* background-image: url(../src/Assets/images/user.jpg); */
   background-size: cover;
   background-position: center;
   height: 150px;
@@ -602,24 +630,7 @@ button:hover {
 .c-profile_input {
   width: 48%;
 }
-/* ///////////////////////////////////////////card /////////////////// */
-.c-card {
-  max-width: 531px;
-  width: 100%;
-  background-image: linear-gradient(233deg, #EADEDB 0%, #c93c82 50%, #d96531 75%);
-  padding: 3%;
-  text-align: center;
-  border-radius: 20px;
-  margin: 3% auto;
-}
-.c-card_qr{
-  margin-bottom: 2%;
-}
-.c-card_des p{
-  color: #fff;
-  margin: 1% 2%;
-  font-size: 18px;
-}
+
 /* Change styles for span and cancel button on extra small screens */
 
 @media (max-width: 490px) {

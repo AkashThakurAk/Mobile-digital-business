@@ -1,20 +1,21 @@
 import React from 'react';
 import user from "../Assets/images/user.jpg";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import QRCode from "react-qr-code";
 import { useRef } from 'react';
 import html2canvas from 'html2canvas';
 import download from 'downloadjs';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
-function Profile() {
+function User() {
 
-    console.log(`login user is on profile page  ${localStorage.getItem("loginuser")}`);
-
+    const loginemail = localStorage.getItem("loginemail")
     const [username, setUsername] = useState();
-    // const [profilepic, setProfilepic] = useState();
-    const [fullname, setFullname] = useState();
+    const [profileImage, setProfileImage] = useState();
+    const [fullname, setFullname] = useState([]);
     const [companyname, setCompanyname] = useState();
     const [title, setTitle] = useState();
     const [website, setWebsite] = useState();
@@ -24,11 +25,11 @@ function Profile() {
     const [facebook, setFacebook] = useState();
     const [instagram, setInstagram] = useState();
     const [errmsg, setErrmsg] = useState();
+    const [responsedata, setResponsedata] = useState([]);
 
-    const loginemail = localStorage.getItem("loginuser");
-    console.log(`login email is on profile page  ${loginemail}`);
+    const redirect = useNavigate();
 
-
+    //API TO SEND DATA TO DB FOR UPDATE
     const isValidURL = (url) => {
         const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
         return urlRegex.test(url);
@@ -70,44 +71,103 @@ function Profile() {
         }
     };
 
-    const [profileImage, setProfileImage] = useState(user);
-    const [qrValue, setQrValue] = useState("placeholding");
-    const [qrname, setqrname] = useState();
+    const [qrValue, setQrValue] = useState();
+    // const [qrname, setqrname] = useState();
+    const [qrfullname, setFullqrname] = useState();
+    const [qrcompanyname, setQRCompanyname] = useState();
+    const [qrUsername, setQrUsername] = useState();
     const [isVisible, setIsvisible] = useState(null);
     const qrCodeRef = useRef(null);
-
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
 
-        if (file) {
-            const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-
-            if (!allowedExtensions.exec(file.name)) {
-                // Display an error message or handle the invalid file type here
-                alert('Invalid file type. Please select an image file.');
-                event.target.value = ''; // Clear the file input
-            } else {
-                console.log('Valid image selected:', file);
-                setProfileImage(URL.createObjectURL(file));
-            }
+        if (file != null) {
+            setProfileImage(URL.createObjectURL(file));
         }
-        const profileImage = document.getElementById('imag');
+        else {
+            setProfileImage(URL.createObjectURL(profileImage));
+        }
+
+        const profileImageContainer = document.getElementById('imag');
         // Check if a file is selected
         if (event.target.files.length > 0) {
             // Clear previous content
-            profileImage.innerHTML = '';
+            profileImageContainer.innerHTML = '';
             const img = document.createElement('img');
             img.src = URL.createObjectURL(event.target.files[0]);
-            profileImage.appendChild(img);
+            profileImageContainer.appendChild(img);
         }
     };
 
 
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+
+        const file = document.getElementById('getpic').files[0];
+
+
+        if (
+            !profileImage ||
+            !username ||
+            !fullname ||
+            !companyname ||
+            !title ||
+            !website ||
+            !number ||
+            !email ||
+            !linkdin ||
+            !facebook ||
+            !instagram
+        ) {
+            setErrmsg("Enter Full Details");
+            return;
+        }
+        else {
+            try {
+                const formData = new FormData();
+
+                formData.append('username', username);
+                formData.append('profileImage', file);
+                formData.append('fullname', fullname);
+                formData.append('companyname', companyname);
+                formData.append('title', title);
+                formData.append('website', website);
+                formData.append('number', number);
+                formData.append('email', email);
+                formData.append('linkdin', linkdin);
+                formData.append('facebook', facebook);
+                formData.append('instagram', instagram);
+                formData.append('loginemail', loginemail);
+
+                const response = await axios.post("http://localhost:2000/update", formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+
+                });
+                if (response.status === 200) {
+                    e.preventDefault();
+
+                    setErrmsg("Data Updated Successfully");
+                    // console.log("Data Updated Successfully");
+                }
+            } catch (error) {
+                e.preventDefault();
+
+                if (error.response && error.response.status === 400) {
+                    setErrmsg(error.response.data.message);
+                } else {
+                    setErrmsg("Something went wrong");
+                    console.error("Error: ", error);
+                }
+            }
+        }
+    };
 
     const handleSubmit = async (e) => {
         // console.log("Handle Submit ")
-        e.preventDefault();
+        // e.preventDefault();
 
         const file = document.getElementById('getpic').files[0];
 
@@ -142,7 +202,7 @@ function Profile() {
                 formData.append('linkdin', linkdin);
                 formData.append('facebook', facebook);
                 formData.append('instagram', instagram);
-                formData.append('loginuser', loginemail);
+                formData.append('loginemail', loginemail);
 
                 const response = await axios.post("http://localhost:2000/update", formData, {
                     headers: {
@@ -155,13 +215,18 @@ function Profile() {
                     setErrmsg("Data Submitted Successfully");
                     // console.log("Data Submitted Successfully");
                     const user_name = username.split(' ')[0];
-                    const Website = `xava.co.in/virtualcard/${user_name}`;
-                    e.preventDefault();
-                    setqrname(user_name);
+                    const Website = `xavatestserver.com/digitalcard/${user_name}`;
+                    // const fullname = fullname;
+                    // e.preventDefault();
+                    setQrUsername(user_name);
                     setQrValue(Website);
+                    setFullqrname(fullname);
+                    setQRCompanyname(companyname);
                     setIsvisible(true);
                 }
             } catch (error) {
+                // e.preventDefault();
+
                 if (error.response && error.response.status === 400) {
                     setErrmsg(error.response.data.message);
                 } else {
@@ -172,10 +237,11 @@ function Profile() {
         }
     };
 
-    const handleDownload = (e) => {
-        e.preventDefault();
-        console.log("qr download ");
+    const handleDownload = () => {
+        // console.log("qr download ");
+
         const qrCodeContainer = qrCodeRef.current;
+
         if (qrCodeContainer) {
             const captureOptions = {
                 useCORS: true,
@@ -202,6 +268,54 @@ function Profile() {
         }
     };
 
+    // API TO FETCH DATA FROM DB
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get("http://localhost:2000/fetchdata", {
+                    params: {
+                        loginemail: loginemail,
+                    }
+                });
+
+                if (response.status === 200) {
+                    setResponsedata(response.data);
+                    // console.log("Response object:", response);
+                    // console.log("Data object:", response.data);
+                    setFullname(response.data[0].Name);
+                    setUsername(response.data[0].User_Name);
+                    setEmail(response.data[0].Email);
+                    setWebsite(response.data[0].Website_Link);
+                    setInstagram(response.data[0].Instagram_Link);
+                    setFacebook(response.data[0].Facebook_Link);
+                    setLinkdin(response.data[0].Linkdin_Link);
+                    setNumber(response.data[0].Number);
+                    setTitle(response.data[0].Title);
+                    setCompanyname(response.data[0].Company);
+                    setProfileImage(response.data[0].Profile_Pic);
+                }
+
+            } catch (error) {
+                if (error.response && error.response.status === 400) {
+                    console.log("Error:", error.response.data);
+                } else {
+                    console.error("Error:", error);
+                }
+            }
+        };
+
+        // Call fetchData when the component mounts
+        fetchData();
+    }, []);
+
+    const handleLogout = () => {
+        window.localStorage.removeItem("loginemail");
+        redirect("/");
+    }
+
+
+    // Empty dependency array ensures that useEffect runs only once when the component mounts
     return (
         <div className="c-login-dive c-new-sign-up" >
             <div className='c-mobile_body c-profile_page'>
@@ -212,19 +326,21 @@ function Profile() {
                         <div className="layer"></div>
                     </div>
                 </div>
-                <div className="c-login_des c-profile_des">
 
+                <div className="c-login_des c-profile_des">
                     <form >
+                        <button className='c-logout' onClick={handleLogout}>LogOut</button>
 
                         <div className="c-mobile_text">
-                            <h2>Welcome</h2>
-                            <p>Please Enter Your Details</p>
+                            <h2>Welcome Back </h2>
+                            <p>Update Your Details</p>
                         </div>
                         <div className="c-input-box">
 
                             <div id="profile-upload">
                                 <div className="hvr-profile-img">
                                     <input
+                                        accept='image/*'
                                         type="file"
                                         name="logo"
                                         id="getpic"
@@ -232,63 +348,62 @@ function Profile() {
                                         title="Dimensions 180 X 180"
                                         onChange={(e) => {
                                             handleImageChange(e);
-                                            setProfileImage(e.target.files);
+                                            // setProfileImage(e.target.files);
                                         }}
                                         required
                                     />
                                     <i className="fa fa-camera"></i>
                                 </div>
                                 <div id="imag" >
-                                    <img src={profileImage} />
+                                    <img src={`/Assets/profile/${profileImage}`} />
                                 </div>
                             </div>
+
                             <div className='c-profile_from'>
                                 <div className='c-profile_input'>
                                     <label htmlFor="username"><b>User Name</b></label>
-                                    <input type="text" placeholder="Enter User Name" name="username" onChange={(e) => { setUsername(e.target.value) }} required />
+                                    <input type="text" placeholder="Enter User Name" name="username" value={username} onChange={(e) => { setUsername(e.target.value) }} readOnly />
                                 </div>
                                 <div className='c-profile_input'>
                                     <label htmlFor="uname"><b>Full Name</b></label>
-                                    <input type="text" placeholder="Enter Full Name" name="fullname" onChange={(e) => { setFullname(e.target.value) }} required />
+                                    <input type="text" placeholder="Enter Full Name" name="fullname" value={fullname} onChange={(e) => { setFullname(e.target.value) }} required />
                                 </div>
                                 <div className='c-profile_input'>
                                     <label htmlFor="uname"><b>Company Name</b></label>
-                                    <input type="text" placeholder="Enter Company Name" name="company" onChange={(e) => { setCompanyname(e.target.value) }} required />
+                                    <input type="text" placeholder="Enter Company Name" name="company" value={companyname} onChange={(e) => { setCompanyname(e.target.value) }} required />
                                 </div>
                                 <div className='c-profile_input'>
                                     <label htmlFor="uname"><b>Title</b></label>
-                                    <input type="text" placeholder="Enter Title" name="title" onChange={(e) => { setTitle(e.target.value) }} required />
+                                    <input type="text" placeholder="Enter Title" name="title" value={title} onChange={(e) => { setTitle(e.target.value) }} required />
                                 </div>
                                 <div className='c-profile_input'>
                                     <label htmlFor="website"><b>Website URL</b></label>
-                                    <input type="url" placeholder="Enter Website URL" name="website" onChange={handleWebsiteChange} required />
+                                    <input type="url" placeholder="Enter Website URL" name="website" value={website} onChange={handleWebsiteChange} required />
 
                                 </div>
                                 <div className='c-profile_input'>
                                     <label htmlFor="uname"><b>Phone Number</b></label>
-                                    <input type="tel" placeholder="Enter Phone Number With Country Code" name="number" onChange={(e) => { setNumber(e.target.value) }} required />
+                                    <input type="tel" placeholder="Enter Phone Number With Country Code" name="number" value={number} onChange={(e) => { setNumber(e.target.value) }} required />
                                 </div>
                                 <div className='c-profile_input'>
                                     <label htmlFor="uname"><b>Email</b></label>
-                                    <input type="email" placeholder="Enter Email" name="email" onChange={(e) => { setEmail(e.target.value) }} required />
+                                    <input type="email" placeholder="Enter Email" name="email" value={email} onChange={(e) => { setEmail(e.target.value) }} required />
 
                                 </div>
                                 <div className='c-profile_input'>
                                     <label htmlFor="linkdin"><b>Linkdin URL</b></label>
-                                    <input type="url" placeholder="Enter Linkdin URL" name="linkdin" onChange={handleLinkdinChange} required />
+                                    <input type="url" placeholder="Enter Linkdin URL" name="linkdin" value={linkdin} onChange={handleLinkdinChange} required />
 
                                 </div>
                                 <div className='c-profile_input'>
                                     <label htmlFor="facebook"><b>Facebok URL</b></label>
-                                    <input type="url" placeholder="Enter Facebok URL" name="facebook" onChange={handleFacebookChange} required />
+                                    <input type="url" placeholder="Enter Facebok URL" name="facebook" value={facebook} onChange={handleFacebookChange} required />
                                 </div>
                                 <div className='c-profile_input'>
                                     <label htmlFor="instagram"><b>Instagram URL</b></label>
-                                    <input type="url" placeholder="Enter Instagram URL" name="instagram" onChange={handleInstagramChange} required />
+                                    <input type="url" placeholder="Enter Instagram URL" name="instagram" value={instagram} onChange={handleInstagramChange} required />
                                 </div>
                             </div>
-
-
                             {errmsg && (
                                 <p style={{ color: "red" }}>
                                     {<p style={{ color: "red" }}>{setErrmsg}</p>
@@ -298,23 +413,36 @@ function Profile() {
                             {errmsg && (
                                 <p style={{ color: "red" }}>{errmsg}</p>
                             )}
-                            <button type="submit" onClick={handleSubmit}>
-                                Generate QR Code
-                            </button>
+                            <div className='c-btn_user'>
+                                <button onClick={handleUpdate} >
+                                    Update Data
+                                </button>
+                                <button onClick={handleSubmit} >
+                                    Save Data & Generate QR Code
+                                </button>
+                            </div>
                         </div>
                     </form>
-
                 </div>
                 {isVisible && (
-                    <div className='c-qr'>
-                        <div className='qr_code' ref={qrCodeRef}>
-                            <div>
-                                <p className='q-name'>{qrname}</p>
-                                <QRCode
-                                    value={qrValue}
-                                    // style={{ display: 'block', margin: '0 auto' }}
-                                    onLoad={() => handleDownload()}
-                                />
+                    <div>
+                        <div className='c-card' ref={qrCodeRef}>
+                            <div className='c-card-b'>
+                                <div>
+                                    <p className='q-name'>{qrcompanyname}</p>
+                                    <QRCode
+                                        className='c-card_qr'
+                                        value={qrValue}
+                                        // style={{ display: 'block', margin: '0 auto' }}
+                                        onLoad={() => handleDownload()}
+                                    />
+                                    <div className='c-card_des'>
+                                        <p><span>{qrfullname}</span></p>
+                                        <Link to={`/virtualcard/${qrUsername}`}>
+                                            <p><span>{qrValue}</span></p>
+                                        </Link>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div className='qr_download'>
@@ -323,9 +451,9 @@ function Profile() {
                     </div>
                 )}
             </div >
-        </div>
+        </div >
     );
 }
 
-export default Profile;
+export default User;
 
